@@ -37,11 +37,42 @@ public class WidgetTestApplication extends Application {
 <#if marginBottom?has_content>
         bar.setMarginBottom(${marginBottom}d);
 </#if>
+
 <#if groupInset?has_content>
         bar.setGroupInset(${groupInset}d);
 </#if>
 <#if barInset?has_content>
         bar.setBarInset(${barInset}d);
+</#if>
+
+<#if xAxisVisible >
+        bar.setXAxisVisisble(true);
+</#if>
+<#if xAxisLabelVisible>
+        bar.setXAxisLabelVisible(true);
+</#if>
+
+<#if yAxisVisible >
+        bar.setYAxisVisisble(true);
+</#if>
+<#if yAxisLabelVisible>
+        bar.setYAxisLabelVisible(true);
+        bar.setYAxisLabelStep(${yAxisLabelStep}d);
+<#if yAxisGridVisible>
+        bar.setYAxisGridVisible(true);
+</#if>
+</#if>
+<#if yAxisCustomFormatter>
+        bar.setYAxisLabelFormatter(new AxisLabelFormatter() {
+            public String format(double labelValue) {
+                return String.valueOf(labelValue) + "\u20AC";
+            }
+        });
+</#if>
+
+<#if randomColorsSelected>
+        bar.setColors(new String[]{<#list randomColors as color><#if color_index % 5 = 0>
+                             </#if>"${color}"<#if color_has_next>, </#if></#list>});
 </#if>
 
         window.addComponent(bar);

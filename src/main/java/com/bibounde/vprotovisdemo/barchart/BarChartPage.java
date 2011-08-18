@@ -196,12 +196,19 @@ public class BarChartPage implements Page {
         this.sourceCodeMap.put("xAxisVisible", this.axisPanel.isXAxisEnabled());
         
         chart.setXAxisLabelVisible(this.axisPanel.isXAxisLabelEnabled());
-        this.sourceCodeMap.put("xAxisLabelVisible", this.axisPanel.isXAxisEnabled());
+        this.sourceCodeMap.put("xAxisLabelVisible", this.axisPanel.isXAxisLabelEnabled());
 
         chart.setYAxisVisible(this.axisPanel.isYAxisEnabled());
+        this.sourceCodeMap.put("yAxisVisible", this.axisPanel.isYAxisEnabled());
+        
         chart.setYAxisLabelVisible(this.axisPanel.isYAxisLabelEnabled());
+        this.sourceCodeMap.put("yAxisLabelVisible", this.axisPanel.isYAxisLabelEnabled());
+        
         chart.setYAxisLabelStep(this.axisPanel.getYAxisLabelStep());
+        this.sourceCodeMap.put("yAxisLabelStep", this.axisPanel.getYAxisLabelStep());
+        
         chart.setYAxisGridVisible(this.axisPanel.isYAxisGridEnabled());
+        this.sourceCodeMap.put("yAxisGridVisible", this.axisPanel.isYAxisGridEnabled());
 
         if (this.axisPanel.isYAxisCustomFormatter()) {
             chart.setYAxisLabelFormatter(new AxisLabelFormatter() {
@@ -212,12 +219,16 @@ public class BarChartPage implements Page {
         } else {
             chart.setYAxisLabelFormatter(null);
         }
+        this.sourceCodeMap.put("yAxisCustomFormatter", this.axisPanel.isYAxisCustomFormatter());
 
         if (this.miscPanel.isRandomColorSelected()) {
-            chart.setColors(RandomUtil.nextColors());
+            String[] colors = RandomUtil.nextColors();
+            chart.setColors(colors);
+            this.sourceCodeMap.put("randomColors", colors);
         } else {
             chart.setColors(null);
         }
+        this.sourceCodeMap.put("randomColorsSelected", this.miscPanel.isRandomColorSelected());
 
         if (this.miscPanel.isLegendEnabled()) {
             chart.setLegendVisible(true);
@@ -225,6 +236,8 @@ public class BarChartPage implements Page {
         } else {
             chart.setLegendVisible(false);
         }
+        
+        
 
         if (this.miscPanel.isTooltipEnabled()) {
             if (this.miscPanel.isTooltipCustomEnabled()) {
