@@ -1,33 +1,39 @@
-package com.bibounde.vprotovisdemo.barchart;
+package com.bibounde.vprotovisdemo.linechart;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.bibounde.vprotovis.chart.bar.Serie;
+import com.bibounde.vprotovis.chart.line.Serie;
+import com.bibounde.vprotovis.common.Point;
 import com.bibounde.vprotovisdemo.Page;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class DataPanel implements Page {
 
     private static final String PROPERTY_SERIE_NAME = "Name";
-    private static final String PROPERTY_SERIE_VAL1 = "Val 1.";
-    private static final String PROPERTY_SERIE_VAL2 = "Val 2.";
-    private static final String PROPERTY_SERIE_VAL3 = "Val 3.";
-    private static final String PROPERTY_SERIE_VAL4 = "Val 4.";
+    private static final String PROPERTY_SERIE_X1 = "X 1.";
+    private static final String PROPERTY_SERIE_Y1 = "Y 1.";
+    private static final String PROPERTY_SERIE_X2 = "X 2.";
+    private static final String PROPERTY_SERIE_Y2 = "Y 2.";
+    private static final String PROPERTY_SERIE_X3 = "X 3.";
+    private static final String PROPERTY_SERIE_Y3 = "Y 3.";
+    private static final String PROPERTY_SERIE_X4 = "X 4.";
+    private static final String PROPERTY_SERIE_Y4 = "Y 4.";
     
     private GridLayout content;
     private Table serieTable; 
+    
     private List<String> selectedIds = new ArrayList<String>();
     private int serieIndex = 1;
     
@@ -53,11 +59,14 @@ public class DataPanel implements Page {
         this.serieTable.setEditable(true);
         this.serieTable.addContainerProperty("", CheckBox.class, null);
         this.serieTable.addContainerProperty(PROPERTY_SERIE_NAME, String.class, null);
-        this.serieTable.addContainerProperty(PROPERTY_SERIE_VAL1, Double.class, null);
-        this.serieTable.addContainerProperty(PROPERTY_SERIE_VAL2, Double.class, null);
-        this.serieTable.addContainerProperty(PROPERTY_SERIE_VAL3, Double.class, null);
-        this.serieTable.addContainerProperty(PROPERTY_SERIE_VAL4, Double.class, null);
-        
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_X1, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_Y1, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_X2, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_Y2, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_X3, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_Y3, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_X4, Double.class, null);
+        this.serieTable.addContainerProperty(PROPERTY_SERIE_Y4, Double.class, null);
         
         VerticalLayout buttonLayout = new VerticalLayout();
         buttonLayout.setSpacing(true);
@@ -86,7 +95,7 @@ public class DataPanel implements Page {
             }
         });
         
-        this.serieTable.addItem(new Object[]{null, "Serie_0", 1000, 1170, 660,1030}, "serie_0");
+        this.serieTable.addItem(new Object[]{null, "Serie_0", 0, 1000, 1, 1170, 2, 660, 3, 1030}, "serie_0");
         
         for (int i = 0; i < 2; i++) {
             this.addSerie();
@@ -110,7 +119,7 @@ public class DataPanel implements Page {
             }
         });
         
-        this.serieTable.addItem(new Object[]{box, "Serie_" + index, RandomUtil.nextDouble(2000, false), RandomUtil.nextDouble(2000, false), RandomUtil.nextDouble(2000, false), RandomUtil.nextDouble(2000, false)}, id);
+        this.serieTable.addItem(new Object[]{box, "Serie_" + index, 0, RandomUtil.nextDouble(2000, true), 1, RandomUtil.nextDouble(2000, true), 2, RandomUtil.nextDouble(2000, true), 3, RandomUtil.nextDouble(2000, true)}, id);
     }
     
     private void removeSeries() {
@@ -119,12 +128,7 @@ public class DataPanel implements Page {
         }
     }
     
-    public Component getComponent() {
-        return this.content;
-    }
-    
     public List<Serie> getSeries() {
-        
         List<Serie> ret = new ArrayList<Serie>();
         
         Iterator iterator = this.serieTable.getItemIds().iterator();
@@ -133,26 +137,30 @@ public class DataPanel implements Page {
             Item item = this.serieTable.getItem(id);
             
             String name = (String) item.getItemProperty(PROPERTY_SERIE_NAME).getValue();
-            Double val1 = (Double) item.getItemProperty(PROPERTY_SERIE_VAL1).getValue();
-            Double val2 = (Double) item.getItemProperty(PROPERTY_SERIE_VAL2).getValue();
-            Double val3 = (Double) item.getItemProperty(PROPERTY_SERIE_VAL3).getValue();
-            Double val4 = (Double) item.getItemProperty(PROPERTY_SERIE_VAL4).getValue();
+            Double x1 = (Double) item.getItemProperty(PROPERTY_SERIE_X1).getValue();
+            Double y1 = (Double) item.getItemProperty(PROPERTY_SERIE_Y1).getValue();
+            Double x2 = (Double) item.getItemProperty(PROPERTY_SERIE_X2).getValue();
+            Double y2 = (Double) item.getItemProperty(PROPERTY_SERIE_Y2).getValue();
+            Double x3 = (Double) item.getItemProperty(PROPERTY_SERIE_X3).getValue();
+            Double y3 = (Double) item.getItemProperty(PROPERTY_SERIE_Y3).getValue();
+            Double x4 = (Double) item.getItemProperty(PROPERTY_SERIE_X4).getValue();
+            Double y4 = (Double) item.getItemProperty(PROPERTY_SERIE_Y4).getValue();
             
             Serie serie = new Serie();
             serie.setName(name);
-            serie.setValues(new double[]{val1, val2, val3, val4});
+            serie.setValues(new Point[]{new Point(x1, y1), new Point(x2, y2), new Point(x3, y3), new Point(x4, y4)});
             
             ret.add(serie);
         }
         
         return ret;
     }
-    
-    public String[] getGroupNames() {
-        return new String[]{PROPERTY_SERIE_VAL1, PROPERTY_SERIE_VAL2, PROPERTY_SERIE_VAL3, PROPERTY_SERIE_VAL4};
+
+    public Component getComponent() {
+        return this.content;
     }
 
     public boolean validate() {
         return true;
-    }
+    } 
 }

@@ -1,6 +1,6 @@
-package com.bibounde.vprotovisdemo.barchart;
+package com.bibounde.vprotovisdemo.linechart;
 
-import com.bibounde.vprotovis.BarChartComponent;
+import com.bibounde.vprotovis.LineChartComponent;
 import com.bibounde.vprotovisdemo.Page;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -14,7 +14,7 @@ public class ChartPanel implements Page {
     private Panel content;
     private Button renderButton;
     private Button showSourceButton;
-    private BarChartComponent chart;
+    private LineChartComponent chart;
     private Panel chartContent;
     
     public ChartPanel() {
@@ -46,28 +46,25 @@ public class ChartPanel implements Page {
         this.chartContent = new Panel();
         this.content.addComponent(this.chartContent);
         
-        this.chart = new BarChartComponent();
+        this.chart = new LineChartComponent();
         this.chartContent.addComponent(this.chart);
     }
-
+    
     public Component getComponent() {
         return this.content;
     }
     
-    public BarChartComponent getChart() {
+    public LineChartComponent getChart() {
         return this.chart;
     }
     
     public Button getRenderButton() {
         return this.renderButton;
     }
-    
-    public Button getSourceButton() {
-        return this.showSourceButton;
-    }
 
     public boolean validate() {
         // TODO Auto-generated method stub
         return false;
     }
+
 }
