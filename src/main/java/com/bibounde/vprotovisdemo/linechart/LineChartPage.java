@@ -1,11 +1,17 @@
 package com.bibounde.vprotovisdemo.linechart;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.bibounde.vprotovis.LineChartComponent;
+import com.bibounde.vprotovis.chart.line.InterpolationMode;
 import com.bibounde.vprotovis.chart.line.Serie;
 import com.bibounde.vprotovis.common.AxisLabelFormatter;
 import com.bibounde.vprotovisdemo.Page;
+import com.bibounde.vprotovisdemo.dialog.CodeDialog;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
@@ -15,9 +21,13 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.Notification;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+
 public class LineChartPage implements Page {
 
-    public static final String FQN = "LineChartComponent";
+    public static final String FQN = "LineChart";
     
     private static final String TAB_DIMENSIONS = "Dimensions";
     private static final String TAB_AXIS = "Grid";
@@ -32,6 +42,7 @@ public class LineChartPage implements Page {
     private MiscPanel miscPanel;
     
     private TabSheet tabSheet;
+    private Map<String, Object> sourceCodeMap = new HashMap<String, Object>();
     
     public LineChartPage() {
         this.initLayout();
@@ -70,6 +81,28 @@ public class LineChartPage implements Page {
                 renderChart(true);
             }
         });
+        
+        this.chartPanel.getSourceButton().addListener(new ClickListener() {
+            
+            public void buttonClick(ClickEvent event) {
+                try {
+                    Configuration configuration = new Configuration();
+                    configuration.setClassForTemplateLoading(getClass(), "/templates/");
+                    Template tpl = configuration.getTemplate("LineChartComponentCode.ftl");
+                    StringWriter sWriter = new StringWriter();
+                    
+                    tpl.process(sourceCodeMap, sWriter);
+                    CodeDialog codeDialog = new CodeDialog(sWriter.toString());
+                    content.getWindow().addWindow(codeDialog);
+                    codeDialog.center();
+                    
+                } catch (IOException e) {
+                    content.getWindow().showNotification("Configuration error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                } catch (TemplateException e) {
+                    content.getWindow().showNotification("Template error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+        });
     }
     
     private void renderChart(boolean validate) {
@@ -93,18 +126,24 @@ public class LineChartPage implements Page {
         List<Serie> series = this.dataPanel.getSeries();
         
         LineChartComponent chart = this.chartPanel.getChart();
+        this.sourceCodeMap.clear();
         
         chart.clearSeries();
         for (Serie serie : series) {
             chart.addSerie(serie.getName(), serie.getValues());
         }
+        this.sourceCodeMap.put("series", series);
         
         chart.setChartWidth(this.dimensionPanel.getChartWidth());
         chart.setChartHeight(this.dimensionPanel.getChartHeight());
         
+        this.sourceCodeMap.put("chartWidth", this.dimensionPanel.getChartWidth());
+        this.sourceCodeMap.put("chartHeight", this.dimensionPanel.getChartHeight());
+        
         Double marginLeft = this.dimensionPanel.getMarginLeft();
         if (marginLeft != null) {
             chart.setMarginLeft(marginLeft);
+            this.sourceCodeMap.put("marginLeft", marginLeft);
         } else {
             chart.setMarginLeft(10d);
         }
@@ -112,6 +151,7 @@ public class LineChartPage implements Page {
         Double marginRight = this.dimensionPanel.getMarginRight();
         if (marginRight != null) {
             chart.setMarginRight(marginRight);
+            this.sourceCodeMap.put("marginRight", marginRight);
         } else {
             chart.setMarginRight(10d);
         }
@@ -119,6 +159,7 @@ public class LineChartPage implements Page {
         Double marginTop = this.dimensionPanel.getMarginTop();
         if (marginTop != null) {
             chart.setMarginTop(marginTop);
+            this.sourceCodeMap.put("marginTop", marginTop);
         } else {
             chart.setMarginTop(10d);
         }
@@ -126,6 +167,7 @@ public class LineChartPage implements Page {
         Double marginBottom = this.dimensionPanel.getMarginBottom();
         if (marginBottom != null) {
             chart.setMarginBottom(marginBottom);
+            this.sourceCodeMap.put("marginBottom", marginBottom);
         } else {
             chart.setMarginBottom(10d);
         }
@@ -133,14 +175,22 @@ public class LineChartPage implements Page {
         Integer lineWidth = this.dimensionPanel.getLineWidth();
         if (lineWidth != null) {
             chart.setLineWidth(lineWidth);
+            this.sourceCodeMap.put("lineWidth", lineWidth);
         } else {
             chart.setLineWidth(1);
         }
         
         chart.setXAxisVisible(this.axisPanel.isXAxisEnabled());
+        this.sourceCodeMap.put("xAxisVisible", this.axisPanel.isXAxisEnabled());
+        
         chart.setXAxisLabelVisible(this.axisPanel.isXAxisLabelEnabled());
+        this.sourceCodeMap.put("xAxisLabelVisible", this.axisPanel.isXAxisLabelEnabled());
+        
         chart.setXAxisLabelStep(this.axisPanel.getXAxisLabelStep());
+        this.sourceCodeMap.put("xAxisLabelStep", this.axisPanel.getXAxisLabelStep());
+        
         chart.setXAxisGridVisible(this.axisPanel.isXAxisGridEnabled());
+        this.sourceCodeMap.put("xAxisGridVisible", this.axisPanel.isXAxisGridEnabled());
 
         if (this.axisPanel.isXAxisCustomFormatter()) {
             chart.setXAxisLabelFormatter(new AxisLabelFormatter() {
@@ -151,11 +201,19 @@ public class LineChartPage implements Page {
         } else {
             chart.setXAxisLabelFormatter(null);
         }
+        this.sourceCodeMap.put("xAxisCustomFormatter", this.axisPanel.isXAxisCustomFormatter());
         
         chart.setYAxisVisible(this.axisPanel.isYAxisEnabled());
+        this.sourceCodeMap.put("yAxisVisible", this.axisPanel.isYAxisEnabled());
+        
         chart.setYAxisLabelVisible(this.axisPanel.isYAxisLabelEnabled());
+        this.sourceCodeMap.put("yAxisLabelVisible", this.axisPanel.isYAxisLabelEnabled());
+        
         chart.setYAxisLabelStep(this.axisPanel.getYAxisLabelStep());
+        this.sourceCodeMap.put("yAxisLabelStep", this.axisPanel.getYAxisLabelStep());
+        
         chart.setYAxisGridVisible(this.axisPanel.isYAxisGridEnabled());
+        this.sourceCodeMap.put("yAxisGridVisible", this.axisPanel.isYAxisGridEnabled());
 
         if (this.axisPanel.isYAxisCustomFormatter()) {
             chart.setYAxisLabelFormatter(new AxisLabelFormatter() {
@@ -166,21 +224,30 @@ public class LineChartPage implements Page {
         } else {
             chart.setYAxisLabelFormatter(null);
         }
+        this.sourceCodeMap.put("yAxisCustomFormatter", this.axisPanel.isYAxisCustomFormatter());
         
         if (this.miscPanel.isRandomColorSelected()) {
-            chart.setColors(RandomUtil.nextColors());
+            String[] colors = RandomUtil.nextColors();
+            chart.setColors(colors);
+            this.sourceCodeMap.put("randomColors", colors);
         } else {
             chart.setColors(null);
         }
+        this.sourceCodeMap.put("randomColorsSelected", this.miscPanel.isRandomColorSelected());
 
         if (this.miscPanel.isLegendEnabled()) {
             chart.setLegendVisible(true);
             chart.setLegendAreaWidth(this.miscPanel.getLegendAreaWidth());
+            this.sourceCodeMap.put("legendAreaWidth", this.miscPanel.getLegendAreaWidth());
         } else {
             chart.setLegendVisible(false);
         }
+        this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
         chart.setInterpolationMode(this.miscPanel.getInterpolationMode());
+        if (this.miscPanel.getInterpolationMode() != InterpolationMode.LINEAR) {
+            this.sourceCodeMap.put("interpolation", this.miscPanel.getInterpolationMode().name());
+        }
         
         chart.requestRepaint();
     }

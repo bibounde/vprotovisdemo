@@ -1,0 +1,19 @@
+@import "../reindeer/styles.css";
+
+.pub {
+    margin-top : 10px;
+}
+
+.screenshot-frame {
+    background: transparent url(screenshot-frame.png) no-repeat;
+}
+
+.screenshot-frame:hover {
+    background: transparent url(screenshot-frame-hover.png) no-repeat;
+    cursor : pointer;
+}
+
+.screenshot-img {
+    padding-top: 12px;
+    padding-left: 13px;
+}

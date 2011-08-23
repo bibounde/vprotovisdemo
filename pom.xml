@@ -6,7 +6,7 @@
 	<groupId>com.bibounde.vprotovisdemo</groupId>
 	<artifactId>vprotovisdemo</artifactId>
 	<packaging>war</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2</version>
 	<name>Vaadin wrapper for Vaadin Demo</name>
 	<scm>
 		<connection>scm:git:ssh://github.com/bibounde/bibounde-mvn-repo.git</connection>
@@ -33,6 +33,10 @@
 			<id>bibounde-snapshots</id>
 			<url>https://raw.github.com/bibounde/bibounde-mvn-repo/master/snapshots</url>
 		</repository>
+		<repository>
+            <id>bibounde-releases</id>
+            <url>https://raw.github.com/bibounde/bibounde-mvn-repo/master/releases</url>
+        </repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -123,6 +127,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<vprotovis.version>0.2</vprotovis.version>
 		<vaadin.version>6.6.0</vaadin.version>
 		<gwt.version>2.2.0</gwt.version>
 		<gwt.plugin.version>2.2.0</gwt.plugin.version>
@@ -163,7 +168,7 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.8</version>
 				<configuration>
-				    <useProjectReferences>false</useProjectReferences>
+					<useProjectReferences>false</useProjectReferences>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -178,7 +183,7 @@
 		<dependency>
 			<groupId>com.bibounde.vprotovis</groupId>
 			<artifactId>vprotovis</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${vprotovis.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -236,6 +241,12 @@
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
 			<version>${gae.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>googleanalyticstracker</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 

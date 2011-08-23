@@ -18,13 +18,20 @@ package com.bibounde.vprotovisdemo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
+
+import com.bibounde.vprotovisdemo.action.ActionEvent;
+import com.bibounde.vprotovisdemo.action.ActionListener;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -34,18 +41,22 @@ import com.vaadin.ui.Window;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-public class VProtovisApplication extends Application {
+public class VProtovisApplication extends Application implements ActionListener {
     
     private static final String TREE_ROOT_NODE = "All samples";
     
     private Window window;
-    private Panel welcomePanel;
+    private WelcomePage welcomePage;
     private VerticalLayout sampleContainer;
 
     private Map<String, Page> sampleMap = new HashMap<String, Page>();
+
+    private Tree navTree;
     
     @Override
     public void init() {
+        
+        setTheme("vprotovisdemo");
         
         window = new Window("Protovis Wrapper Demo");
         setMainWindow(window);
@@ -53,15 +64,20 @@ public class VProtovisApplication extends Application {
         sampleMap.put(BarChartPage.FQN, new BarChartPage());
         sampleMap.put(LineChartPage.FQN, new LineChartPage());
 
+        GridLayout mainContent = new GridLayout(1, 3);
+        mainContent.setRowExpandRatio(0, 1);
+        window.addComponent(mainContent);
+        mainContent.setSizeFull();
+        
         HorizontalSplitPanel content = new HorizontalSplitPanel();
-        window.addComponent(content);
+        mainContent.addComponent(content, 0, 0);
         content.setSplitPosition(15);
         
         Panel treePanel = new Panel();
         treePanel.setSizeFull();
         content.addComponent(treePanel);
         
-        Tree navTree = new Tree();
+        this.navTree = new Tree();
         navTree.setImmediate(true);
         treePanel.addComponent(navTree);
         
@@ -88,14 +104,22 @@ public class VProtovisApplication extends Application {
         content.addComponent(this.sampleContainer);
         this.sampleContainer.setSizeFull();
         
-        this.welcomePanel = new Panel();
-        this.welcomePanel.setSizeFull();
-        this.sampleContainer.addComponent(this.welcomePanel);
+        this.welcomePage = new WelcomePage(this);
+        this.sampleContainer.addComponent(this.welcomePage.getComponent());
+        
+        //Pub
+        Embedded pub = new Embedded(null, new ExternalResource("http://code.google.com/appengine/images/appengine-silver-120x30.gif"));
+        pub.setStyleName("pub");
+        mainContent.addComponent(pub, 0, 1);
+        mainContent.setComponentAlignment(pub, Alignment.MIDDLE_CENTER);
+        
+        
+        //Analytics
+        GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-25299561-1", "vprotovisdemo.appspot.com");
+        mainContent.addComponent(tracker, 0, 2);
+        tracker.trackPageview("/demo");
         
         window.getContent().setSizeFull();
-        
-        //Dev only
-        navTree.setValue(LineChartPage.FQN);
     }
     
     private void showSample(String FQN) {
@@ -103,7 +127,13 @@ public class VProtovisApplication extends Application {
         if (this.sampleMap.containsKey(FQN)) {
             this.sampleContainer.addComponent(this.sampleMap.get(FQN).getComponent());
         } else {
-            this.sampleContainer.addComponent(this.welcomePanel);
+            this.sampleContainer.addComponent(this.welcomePage.getComponent());
+        }
+    }
+
+    public void actionPerformed(ActionEvent event) {
+        if (this.welcomePage == event.getSource()) {
+            this.navTree.select(event.getCommand());
         }
     }
 }

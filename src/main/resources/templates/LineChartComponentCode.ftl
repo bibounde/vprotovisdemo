@@ -1,6 +1,7 @@
-import com.bibounde.vprotovis.BarChartComponent;
-import com.bibounde.vprotovis.chart.bar.TooltipFormatter;
+import com.bibounde.vprotovis.LineChartComponent;
+import com.bibounde.vprotovis.chart.line.InterpolationMode;
 import com.bibounde.vprotovis.common.AxisLabelFormatter;
+import com.bibounde.vprotovis.common.Point;
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
@@ -17,9 +18,10 @@ public class WidgetTestApplication extends Application {
         window = new Window("Widget Test");
         setMainWindow(window);
 
-        BarChartComponent bar = new BarChartComponent();
+        LineChartComponent bar = new LineChartComponent();
 <#list series as serie>
-        bar.addSerie("${serie.name}", <@compress single_line=true>new double[] {<#list serie.values as value>${value?c}d<#if value_has_next>, </#if></#list>}</@compress>);
+        bar.addSerie("${serie.name}", new Point[] {<#list serie.values as value><#if value_index % 2 = 0 && value_index != 0>
+                                             </#if>new Point(${value.x?c}d, ${value.y?c}d)<#if value_has_next>, </#if></#list>});
 </#list>
         bar.setChartWidth(${chartWidth?c}d);
         bar.setChartHeight(${chartHeight?c}d); 
@@ -39,20 +41,30 @@ public class WidgetTestApplication extends Application {
 
         bar.setMarginBottom(${marginBottom?c}d);
 </#if>
-<#if groupInset?has_content>
+<#if lineWidth?has_content>
 
-        bar.setGroupInset(${groupInset?c}d);
+        bar.setLineWidth(${lineWidth})
 </#if>
-<#if barInset?has_content>
-
-        bar.setBarInset(${barInset?c}d);
+<#if interpolation?has_content>
+        bar.setInterpolationMode(InterpolationMode.${interpolation});
 </#if>
-<#if xAxisVisible >
+<#if xAxisVisible>
 
-        bar.setXAxisVisisble(true);
+        bar.setXAxisVisible(true);
 </#if>
 <#if xAxisLabelVisible>
         bar.setXAxisLabelVisible(true);
+        bar.setXAxisLabelStep(${xAxisLabelStep?c}d);
+<#if xAxisGridVisible>
+        bar.setXAxisGridVisible(true);
+</#if>
+</#if>
+<#if xAxisCustomFormatter>
+        bar.setXAxisLabelFormatter(new AxisLabelFormatter() {
+            public String format(double labelValue) {
+                return String.valueOf(labelValue) + "j.";
+            }
+        });
 </#if>
 <#if yAxisVisible >
 
@@ -81,36 +93,6 @@ public class WidgetTestApplication extends Application {
 
         bar.setLegendVisible(true);
         bar.setLegendAreaWidth(${legendAreaWidth?c}d);
-</#if>
-<#if tooltipEnabled>
-<#if tooltipCustomEnabled>
-        
-        TooltipFormatter toolTipFormatter = new TooltipFormatter() {
-
-            public String getTooltipHTML(String serieName, double value, String groupName) {
-                StringBuilder tooltipHTML = new StringBuilder();
-                tooltipHTML.append("<table border=0 cellpadding=2 ><tr><td valign=top>");
-                tooltipHTML.append("<img src=\"");
-
-                String img = "/VAADIN/themes/reindeer/thumb_up.png";
-                if (value < 1000) {
-                    img = "/VAADIN/themes/reindeer/thumb_down.png";
-                }
-                tooltipHTML.append(img);
-
-                tooltipHTML.append("\"></td><td>");
-                tooltipHTML.append("<b><i>").append(groupName).append("</i></b><br/>");
-                tooltipHTML.append(serieName).append(": ").append(value).append(" \u20AC");
-                tooltipHTML.append("</td><tr></table>");
-                return tooltipHTML.toString();
-            }
-        };
-
-        bar.setTooltipFormatter(toolTipFormatter);
-</#if>
-<#else>
-
-        bar.setTooltipFormatter(null);
 </#if>
 
         window.addComponent(bar);

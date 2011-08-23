@@ -61,10 +61,13 @@ public class ChartPanel implements Page {
     public Button getRenderButton() {
         return this.renderButton;
     }
+    
+    public Button getSourceButton() {
+        return this.showSourceButton;
+    }
 
     public boolean validate() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
 }

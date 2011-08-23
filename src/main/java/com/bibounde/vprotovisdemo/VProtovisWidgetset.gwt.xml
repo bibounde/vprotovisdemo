@@ -8,4 +8,6 @@
     <inherits name="com.bibounde.vprotovis.gwt.VProtovisWidgetSet" />
 
     <inherits name="org.vaadin.codelabel.CodelabelWidgetset" />
+
+    <inherits name="org.vaadin.googleanalytics.tracking.GoogleAnalyticsWidgetset" />
 </module>

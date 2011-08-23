@@ -25,7 +25,6 @@ public class CodeDialog extends Window {
         content.setSpacing(true);
         
         CodeLabel codeLabel = new CodeLabel(this.src);
-        codeLabel.setSizeFull();
         content.addComponent(codeLabel);
         
     }

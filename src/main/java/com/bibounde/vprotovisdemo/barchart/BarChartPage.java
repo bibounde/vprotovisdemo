@@ -28,7 +28,7 @@ import freemarker.template.TemplateException;
 
 public class BarChartPage implements Page {
 
-    public static final String FQN = "BarChartComponent";
+    public static final String FQN = "BarChart";
 
     private static final String TAB_DIMENSIONS = "Dimensions";
     private static final String TAB_AXIS = "Grid";
@@ -48,7 +48,7 @@ public class BarChartPage implements Page {
     public BarChartPage() {
         this.initLayout();
         this.initListener();
-        this.renderChart(false);
+        this.renderChart(true);
     }
 
     private void initLayout() {
@@ -80,7 +80,7 @@ public class BarChartPage implements Page {
         this.chartPanel.getRenderButton().addListener(new ClickListener() {
 
             public void buttonClick(ClickEvent event) {
-                renderChart(true);
+                renderChart(false);
             }
         });
         
@@ -107,9 +107,9 @@ public class BarChartPage implements Page {
         });
     }
 
-    private void renderChart(boolean validate) {
+    private void renderChart(boolean firstRendering) {
 
-        if (validate) {
+        if (!firstRendering) {
             if (!this.dimensionPanel.validate()) {
                 this.content.getWindow().showNotification("Unable to render chart", "Dimension values are invalid.", Notification.TYPE_ERROR_MESSAGE);
                 this.tabSheet.setSelectedTab(this.dimensionPanel.getComponent());
@@ -155,7 +155,7 @@ public class BarChartPage implements Page {
         Double marginRight = this.dimensionPanel.getMarginRight();
         if (marginRight != null) {
             chart.setMarginRight(marginRight);
-            this.sourceCodeMap.put("marginRight", marginLeft);
+            this.sourceCodeMap.put("marginRight", marginRight);
         } else {
             chart.setMarginRight(10d);
         }
@@ -163,7 +163,7 @@ public class BarChartPage implements Page {
         Double marginTop = this.dimensionPanel.getMarginTop();
         if (marginTop != null) {
             chart.setMarginTop(marginTop);
-            this.sourceCodeMap.put("marginTop", marginLeft);
+            this.sourceCodeMap.put("marginTop", marginTop);
         } else {
             chart.setMarginTop(10d);
         }
@@ -171,7 +171,7 @@ public class BarChartPage implements Page {
         Double marginBottom = this.dimensionPanel.getMarginBottom();
         if (marginBottom != null) {
             chart.setMarginBottom(marginBottom);
-            this.sourceCodeMap.put("marginBottom", marginLeft);
+            this.sourceCodeMap.put("marginBottom", marginBottom);
         } else {
             chart.setMarginBottom(10d);
         }
@@ -233,12 +233,12 @@ public class BarChartPage implements Page {
         if (this.miscPanel.isLegendEnabled()) {
             chart.setLegendVisible(true);
             chart.setLegendAreaWidth(this.miscPanel.getLegendAreaWidth());
+            this.sourceCodeMap.put("legendAreaWidth", this.miscPanel.getLegendAreaWidth());
         } else {
             chart.setLegendVisible(false);
         }
+        this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
-        
-
         if (this.miscPanel.isTooltipEnabled()) {
             if (this.miscPanel.isTooltipCustomEnabled()) {
                 chart.setTooltipFormatter(new TooltipFormatter() {
@@ -267,8 +267,10 @@ public class BarChartPage implements Page {
         } else {
             chart.setTooltipFormatter(null);
         }
+        sourceCodeMap.put("tooltipEnabled", this.miscPanel.isTooltipEnabled());
+        sourceCodeMap.put("tooltipCustomEnabled", this.miscPanel.isTooltipCustomEnabled());
 
-        chart.requestRepaint();
+        chart.requestRepaint();        
     }
 
     public Component getComponent() {
