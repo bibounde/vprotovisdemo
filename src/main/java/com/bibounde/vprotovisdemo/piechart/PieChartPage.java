@@ -1,4 +1,4 @@
-package com.bibounde.vprotovisdemo.barchart;
+package com.bibounde.vprotovisdemo.piechart;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bibounde.vprotovis.BarChartComponent;
-import com.bibounde.vprotovis.chart.bar.BarTooltipFormatter;
-import com.bibounde.vprotovis.chart.bar.DefaultBarTooltipFormatter;
-import com.bibounde.vprotovis.chart.bar.Serie;
-import com.bibounde.vprotovis.common.AxisLabelFormatter;
+import com.bibounde.vprotovis.PieChartComponent;
+import com.bibounde.vprotovis.chart.pie.DefaultPieLabelFormatter;
+import com.bibounde.vprotovis.chart.pie.DefaultPieTooltipFormatter;
+import com.bibounde.vprotovis.chart.pie.PieLabelFormatter;
+import com.bibounde.vprotovis.chart.pie.PieTooltipFormatter;
+import com.bibounde.vprotovis.chart.pie.Serie;
 import com.bibounde.vprotovisdemo.Page;
 import com.bibounde.vprotovisdemo.dialog.CodeDialog;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
@@ -26,56 +27,56 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public class BarChartPage implements Page {
+public class PieChartPage implements Page {
 
-    public static final String FQN = "BarChart";
-
+    public static final String FQN = "PieChart";
+    
     private static final String TAB_DIMENSIONS = "Dimensions";
     private static final String TAB_AXIS = "Grid";
     private static final String TAB_DATA = "Data";
     private static final String TAB_MISC = "Misc";
-
+    
     private VerticalSplitPanel content;
     private DataPanel dataPanel;
     private DimensionPanel dimensionPanel;
-    private ChartPanel chartPanel;
     private AxisPanel axisPanel;
     private MiscPanel miscPanel;
-
+    
     private TabSheet tabSheet;
     private Map<String, Object> sourceCodeMap = new HashMap<String, Object>();
 
-    public BarChartPage() {
+    private ChartPanel chartPanel;
+    
+    public PieChartPage() {
         this.initLayout();
         this.initListener();
         this.renderChart(true);
     }
 
     private void initLayout() {
-
         this.content = new VerticalSplitPanel();
         this.content.setSplitPosition(40);
 
         this.tabSheet = new TabSheet();
         tabSheet.setSizeFull();
         this.content.addComponent(tabSheet);
-
+        
         this.dimensionPanel = new DimensionPanel();
         tabSheet.addTab(this.dimensionPanel.getComponent(), TAB_DIMENSIONS, new ThemeResource("wrench.png"));
-
+        
         this.dataPanel = new DataPanel();
         tabSheet.addTab(this.dataPanel.getComponent(), TAB_DATA, new ThemeResource("table.png"));
-
+        
         this.axisPanel = new AxisPanel();
         tabSheet.addTab(this.axisPanel.getComponent(), TAB_AXIS, new ThemeResource("shape_align_middle.png"));
-
+        
         this.miscPanel = new MiscPanel();
         tabSheet.addTab(this.miscPanel.getComponent(), TAB_MISC, new ThemeResource("palette.png"));
-
+        
         this.chartPanel = new ChartPanel();
         this.content.addComponent(this.chartPanel.getComponent());
     }
-
+    
     private void initListener() {
         this.chartPanel.getRenderButton().addListener(new ClickListener() {
 
@@ -90,7 +91,7 @@ public class BarChartPage implements Page {
                 try {
                     Configuration configuration = new Configuration();
                     configuration.setClassForTemplateLoading(getClass(), "/templates/");
-                    Template tpl = configuration.getTemplate("BarChartComponentCode.ftl");
+                    Template tpl = configuration.getTemplate("PieChartComponentCode.ftl");
                     StringWriter sWriter = new StringWriter();
                     
                     tpl.process(sourceCodeMap, sWriter);
@@ -106,17 +107,12 @@ public class BarChartPage implements Page {
             }
         });
     }
-
+    
     private void renderChart(boolean firstRendering) {
-
         if (!firstRendering) {
             if (!this.dimensionPanel.validate()) {
                 this.content.getWindow().showNotification("Unable to render chart", "Dimension values are invalid.", Notification.TYPE_ERROR_MESSAGE);
                 this.tabSheet.setSelectedTab(this.dimensionPanel.getComponent());
-                return;
-            } else if (!this.axisPanel.validate()) {
-                this.content.getWindow().showNotification("Unable to render chart", "Axis values are invalid.", Notification.TYPE_ERROR_MESSAGE);
-                this.tabSheet.setSelectedTab(this.axisPanel.getComponent());
                 return;
             } else if (!this.miscPanel.validate()) {
                 this.content.getWindow().showNotification("Unable to render chart", "Misc values are invalid.", Notification.TYPE_ERROR_MESSAGE);
@@ -124,20 +120,21 @@ public class BarChartPage implements Page {
                 return;
             }
         }
-
+        
         List<Serie> series = this.dataPanel.getSeries();
-
-        BarChartComponent chart = this.chartPanel.getChart();
+        
+        PieChartComponent chart = this.chartPanel.getChart();
         this.sourceCodeMap.clear();
-
-        chart.setGroupNames(this.dataPanel.getGroupNames());
-
+        
         chart.clearSeries();
+        double total = 0d;
         for (Serie serie : series) {
-            chart.addSerie(serie.getName(), serie.getValues());
+            chart.addSerie(serie.getName(), serie.getValue(), serie.isHighlight());
+            total += serie.getValue();
         }
         this.sourceCodeMap.put("series", series);
-
+        this.sourceCodeMap.put("total", total);
+        
         chart.setChartWidth(this.dimensionPanel.getChartWidth());
         chart.setChartHeight(this.dimensionPanel.getChartHeight());
         
@@ -175,52 +172,31 @@ public class BarChartPage implements Page {
         } else {
             chart.setMarginBottom(10d);
         }
-
-        Double groupInset = this.dimensionPanel.getGroupInset();
-        if (groupInset != null) {
-            chart.setGroupInset(groupInset);
-            this.sourceCodeMap.put("groupInset", groupInset);
+        
+        Double highlightOffset = this.dimensionPanel.getHighlightOffset();
+        if (highlightOffset != null) {
+            chart.setHighlightOffset(highlightOffset);
+            this.sourceCodeMap.put("highlightOffset", highlightOffset);
         } else {
-            chart.setGroupInset(25d);
+            chart.setHighlightOffset(10d);
         }
-
-        Double barInset = this.dimensionPanel.getBarInset();
-        if (barInset != null) {
-            chart.setBarInset(barInset);
-            this.sourceCodeMap.put("barInset", barInset);
+        
+        Integer lineWidth = this.dimensionPanel.getLineWidth();
+        if (lineWidth != null) {
+            chart.setLineWidth(lineWidth);
+            this.sourceCodeMap.put("lineWidth", lineWidth);
         } else {
-            chart.setBarInset(2d);
+            chart.setLineWidth(0);
         }
-
-        chart.setXAxisVisisble(this.axisPanel.isXAxisEnabled());
-        this.sourceCodeMap.put("xAxisVisible", this.axisPanel.isXAxisEnabled());
         
-        chart.setXAxisLabelVisible(this.axisPanel.isXAxisLabelEnabled());
-        this.sourceCodeMap.put("xAxisLabelVisible", this.axisPanel.isXAxisLabelEnabled());
-
-        chart.setYAxisVisible(this.axisPanel.isYAxisEnabled());
-        this.sourceCodeMap.put("yAxisVisible", this.axisPanel.isYAxisEnabled());
-        
-        chart.setYAxisLabelVisible(this.axisPanel.isYAxisLabelEnabled());
-        this.sourceCodeMap.put("yAxisLabelVisible", this.axisPanel.isYAxisLabelEnabled());
-        
-        chart.setYAxisLabelStep(this.axisPanel.getYAxisLabelStep());
-        this.sourceCodeMap.put("yAxisLabelStep", this.axisPanel.getYAxisLabelStep());
-        
-        chart.setYAxisGridVisible(this.axisPanel.isYAxisGridEnabled());
-        this.sourceCodeMap.put("yAxisGridVisible", this.axisPanel.isYAxisGridEnabled());
-
-        if (this.axisPanel.isYAxisCustomFormatter()) {
-            chart.setYAxisLabelFormatter(new AxisLabelFormatter() {
-                public String format(double labelValue) {
-                    return String.valueOf(labelValue) + "\u20AC";
-                }
-            });
+        String lineColor = this.dimensionPanel.getLineColor();
+        if (lineColor != null) {
+            chart.setLineColor(lineColor);
+            this.sourceCodeMap.put("lineColor", lineColor);
         } else {
-            chart.setYAxisLabelFormatter(null);
+            chart.setLineColor("#FFFFFF");
         }
-        this.sourceCodeMap.put("yAxisCustomFormatter", this.axisPanel.isYAxisCustomFormatter());
-
+        
         if (this.miscPanel.isRandomColorSelected()) {
             String[] colors = RandomUtil.nextColors();
             chart.setColors(colors);
@@ -240,11 +216,17 @@ public class BarChartPage implements Page {
         this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
         if (this.miscPanel.isTooltipEnabled()) {
+            boolean permanent = this.miscPanel.isPermanentTooltip();
+            this.sourceCodeMap.put("permanentTooltip", permanent);
             if (this.miscPanel.isTooltipCustomEnabled()) {
-                chart.setTooltipFormatter(new BarTooltipFormatter() {
+                final double tooltipTotal = total;
+                chart.setTooltipFormatter(new PieTooltipFormatter() {
 
-                    public String getTooltipHTML(String serieName, double value, String groupName) {
+                    public boolean isVisible(String serieName, double value) {
+                        return 0.05d <= value/tooltipTotal;
+                    }
 
+                    public String getTooltipHTML(String serieName, double value) {
                         StringBuilder tooltipHTML = new StringBuilder();
                         tooltipHTML.append("<table border=0 cellpadding=2 ><tr><td valign=top>").append("<img src=\"");
 
@@ -254,25 +236,56 @@ public class BarChartPage implements Page {
                         }
                         tooltipHTML.append(img);
                         tooltipHTML.append("\"></td><td>");
-                        tooltipHTML.append("<b><i>").append(groupName).append("</i></b><br/>");
-                        tooltipHTML.append(serieName).append(": ").append(value).append(" \u20AC");
+                        tooltipHTML.append("<b><i>").append(serieName).append("</i></b><br/>");
+                        tooltipHTML.append(value).append(" \u20AC");
                         tooltipHTML.append("</td><tr></table>");
 
                         return tooltipHTML.toString();
                     }
-                });
+                }, permanent);
             } else {
-                chart.setTooltipFormatter(new DefaultBarTooltipFormatter());
+                chart.setTooltipFormatter(new DefaultPieTooltipFormatter(), permanent);
             }
         } else {
             chart.setTooltipFormatter(null);
         }
         sourceCodeMap.put("tooltipEnabled", this.miscPanel.isTooltipEnabled());
         sourceCodeMap.put("tooltipCustomEnabled", this.miscPanel.isTooltipCustomEnabled());
-
-        chart.requestRepaint();   
+        
+        if (this.axisPanel.isLabelEnabled()) {
+            chart.setLabelVisible(true);
+            if (this.axisPanel.isLabelCustomFormatter()) {
+                final double labelTotal = total;
+                chart.setLabelFormatter(new PieLabelFormatter() {
+                    
+                    public boolean isVisible(double labelValue) {
+                        return 0.05d <= labelValue/labelTotal;
+                    }
+                    
+                    public String format(double labelValue) {
+                        int percent = Double.valueOf(labelValue/labelTotal * 100).intValue();
+                        return percent + "%";
+                    }
+                });
+            } else {
+                chart.setLabelFormatter(new DefaultPieLabelFormatter());
+            }
+            this.sourceCodeMap.put("customLabelFormatter", this.axisPanel.isLabelCustomFormatter());
+            String labelColor = this.axisPanel.getLabelColor();
+            if (labelColor != null) {
+                chart.setLabelColor(labelColor);
+                this.sourceCodeMap.put("labelColor", labelColor);
+            } else {
+                chart.setLabelColor("#000000");
+            }
+        } else {
+            chart.setLabelVisible(false);
+        }
+        this.sourceCodeMap.put("labelEnabled", this.axisPanel.isLabelEnabled());
+        
+        chart.requestRepaint();
     }
-
+    
     public Component getComponent() {
         return this.content;
     }

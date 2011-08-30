@@ -1,6 +1,5 @@
-package com.bibounde.vprotovisdemo.linechart;
+package com.bibounde.vprotovisdemo.piechart;
 
-import com.bibounde.vprotovis.chart.line.InterpolationMode;
 import com.bibounde.vprotovisdemo.Page;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -19,17 +18,14 @@ public class MiscPanel implements Page {
     private static final String CUSTOM_OPTION = "Custom";
     private static final String DEFAULT_OPTION = "Default";
     private static final String RANDOM_OPTION = "Random";
-    private static final String LINEAR_OPTION = InterpolationMode.LINEAR.name();
-    private static final String BASIS_OPTION = InterpolationMode.BASIS.name();
-    private static final String CARDINAL_OPTION = InterpolationMode.CARDINAL.name();
-    private static final String STEP_AFTER_OPTION = InterpolationMode.STEP_AFTER.name();
-    private static final String STEP_BEFORE_OPTION = InterpolationMode.STEP_BEFORE.name();
-    
+    private static final String YES_OPTION = "Yes";
+    private static final String NO_OPTION = "No";
     
     private GridLayout content;
-    private NativeSelect legendBox, interpolationBox, tooltipBox, colorBox;
+    private NativeSelect legendBox, tooltipBox, permanentBox, colorBox;
     private Label legendAreaWidthLabel;
     private TextField legendAreaWidthText;
+    private Label permanentLabel;
     
     public MiscPanel() {
         this.initLayout();
@@ -39,7 +35,7 @@ public class MiscPanel implements Page {
     }
 
     private void initLayout() {
-        this.content = new GridLayout(8, 4);
+        this.content = new GridLayout(8, 3);
         this.content.setMargin(true);
         this.content.setSpacing(true);
         
@@ -67,21 +63,32 @@ public class MiscPanel implements Page {
         this.content.addComponent(this.legendAreaWidthText, 3, 0);
         this.content.setComponentAlignment(this.legendAreaWidthText, Alignment.MIDDLE_LEFT);
         
-        Label interpolationLabel = new Label("Interpolation : ");
-        this.content.addComponent(interpolationLabel, 0, 1);
-        this.content.setComponentAlignment(interpolationLabel, Alignment.MIDDLE_LEFT);
+        Label tooltipLabel = new Label("Tooltip : ");
+        this.content.addComponent(tooltipLabel, 0, 1);
+        this.content.setComponentAlignment(tooltipLabel, Alignment.MIDDLE_LEFT);
 
-        this.interpolationBox = new NativeSelect();
-        this.interpolationBox.setNullSelectionAllowed(false);
-        this.interpolationBox.setWidth("110px");
-        this.interpolationBox.addItem(LINEAR_OPTION);
-        this.interpolationBox.addItem(BASIS_OPTION);
-        this.interpolationBox.addItem(CARDINAL_OPTION);
-        this.interpolationBox.addItem(STEP_AFTER_OPTION);
-        this.interpolationBox.addItem(STEP_BEFORE_OPTION);
-        this.interpolationBox.setImmediate(true);
-        this.content.addComponent(this.interpolationBox, 1, 1);
-        this.content.setComponentAlignment(this.interpolationBox, Alignment.MIDDLE_LEFT);
+        this.tooltipBox = new NativeSelect();
+        this.tooltipBox.setNullSelectionAllowed(false);
+        this.tooltipBox.setWidth("110px");
+        this.tooltipBox.addItem(DEFAULT_OPTION);
+        this.tooltipBox.addItem(CUSTOM_OPTION);
+        this.tooltipBox.addItem(DISABLED_OPTION);
+        this.tooltipBox.setImmediate(true);
+        this.content.addComponent(this.tooltipBox, 1, 1);
+        this.content.setComponentAlignment(this.tooltipBox, Alignment.MIDDLE_LEFT);
+        
+        this.permanentLabel = new Label("Permanent : ");
+        this.content.addComponent(permanentLabel, 2, 1);
+        this.content.setComponentAlignment(permanentLabel, Alignment.MIDDLE_LEFT);
+
+        this.permanentBox = new NativeSelect();
+        this.permanentBox.setNullSelectionAllowed(false);
+        this.permanentBox.setWidth("110px");
+        this.permanentBox.addItem(YES_OPTION);
+        this.permanentBox.addItem(NO_OPTION);
+        this.permanentBox.setImmediate(true);
+        this.content.addComponent(this.permanentBox, 3, 1);
+        this.content.setComponentAlignment(this.permanentBox, Alignment.MIDDLE_LEFT);
         
         Label colorLabel = new Label("Colors : ");
         this.content.addComponent(colorLabel, 0, 2);
@@ -95,20 +102,6 @@ public class MiscPanel implements Page {
         this.colorBox.setImmediate(true);
         this.content.addComponent(this.colorBox, 1, 2);
         this.content.setComponentAlignment(this.colorBox, Alignment.MIDDLE_LEFT);
-        
-        Label tooltipLabel = new Label("Tooltip : ");
-        this.content.addComponent(tooltipLabel, 0, 3);
-        this.content.setComponentAlignment(tooltipLabel, Alignment.MIDDLE_LEFT);
-
-        this.tooltipBox = new NativeSelect();
-        this.tooltipBox.setNullSelectionAllowed(false);
-        this.tooltipBox.setWidth("110px");
-        this.tooltipBox.addItem(DEFAULT_OPTION);
-        this.tooltipBox.addItem(CUSTOM_OPTION);
-        this.tooltipBox.addItem(DISABLED_OPTION);
-        this.tooltipBox.setImmediate(true);
-        this.content.addComponent(this.tooltipBox, 1, 3);
-        this.content.setComponentAlignment(this.tooltipBox, Alignment.MIDDLE_LEFT);
     }
     
     private void initListener() {
@@ -118,6 +111,15 @@ public class MiscPanel implements Page {
                 boolean enabled = ENABLED_OPTION.equals(event.getProperty().getValue());
                 legendAreaWidthText.setEnabled(enabled);
                 legendAreaWidthLabel.setEnabled(enabled);
+            }
+        });
+        
+        this.tooltipBox.addListener(new ValueChangeListener() {
+            
+            public void valueChange(ValueChangeEvent event) {
+                boolean enabled = !DISABLED_OPTION.equals(event.getProperty().getValue());
+                permanentLabel.setEnabled(enabled);
+                permanentBox.setEnabled(enabled);
             }
         });
     }
@@ -136,8 +138,8 @@ public class MiscPanel implements Page {
         this.legendBox.setValue(ENABLED_OPTION);
         this.legendAreaWidthText.setValue("150");
         this.colorBox.setValue(DEFAULT_OPTION);
-        this.interpolationBox.setValue(LINEAR_OPTION);
         this.tooltipBox.setValue(DEFAULT_OPTION);
+        this.permanentBox.setValue(NO_OPTION);
     }
 
     public boolean validate() {
@@ -164,15 +166,15 @@ public class MiscPanel implements Page {
         return RANDOM_OPTION.equals(this.colorBox.getValue());
     }
     
-    public InterpolationMode getInterpolationMode() {
-        return InterpolationMode.valueOf((String) this.interpolationBox.getValue());
-    }
-    
     public boolean isTooltipEnabled() {
         return !DISABLED_OPTION.equals(this.tooltipBox.getValue());
     }
     
     public boolean isTooltipCustomEnabled() {
         return isTooltipEnabled() && CUSTOM_OPTION.equals(this.tooltipBox.getValue());
+    }
+    
+    public boolean isPermanentTooltip() {
+        return isTooltipEnabled() && YES_OPTION.equals(this.permanentBox.getValue());
     }
 }

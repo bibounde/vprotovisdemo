@@ -1,18 +1,3 @@
-/*
- * Copyright 2009 IT Mill Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package com.bibounde.vprotovisdemo;
 
 import java.util.HashMap;
@@ -24,6 +9,7 @@ import com.bibounde.vprotovisdemo.action.ActionEvent;
 import com.bibounde.vprotovisdemo.action.ActionListener;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
+import com.bibounde.vprotovisdemo.piechart.PieChartPage;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -52,6 +38,8 @@ public class VProtovisApplication extends Application implements ActionListener 
     private Map<String, Page> sampleMap = new HashMap<String, Page>();
 
     private Tree navTree;
+
+    private GoogleAnalyticsTracker tracker;
     
     @Override
     public void init() {
@@ -63,6 +51,7 @@ public class VProtovisApplication extends Application implements ActionListener 
         
         sampleMap.put(BarChartPage.FQN, new BarChartPage());
         sampleMap.put(LineChartPage.FQN, new LineChartPage());
+        sampleMap.put(PieChartPage.FQN, new PieChartPage());
 
         GridLayout mainContent = new GridLayout(1, 3);
         mainContent.setRowExpandRatio(0, 1);
@@ -92,6 +81,10 @@ public class VProtovisApplication extends Application implements ActionListener 
         navTree.setParent(LineChartPage.FQN, TREE_ROOT_NODE);
         navTree.setChildrenAllowed(LineChartPage.FQN, false);
         
+        navTree.addItem(PieChartPage.FQN);
+        navTree.setParent(PieChartPage.FQN, TREE_ROOT_NODE);
+        navTree.setChildrenAllowed(PieChartPage.FQN, false);
+        
         navTree.expandItem(TREE_ROOT_NODE);
         navTree.addListener(new ValueChangeListener() {
             
@@ -115,9 +108,8 @@ public class VProtovisApplication extends Application implements ActionListener 
         
         
         //Analytics
-        GoogleAnalyticsTracker tracker = new GoogleAnalyticsTracker("UA-25299561-1", "vprotovisdemo.appspot.com");
+        this.tracker = new GoogleAnalyticsTracker("UA-25299561-1", "vprotovisdemo.appspot.com");
         mainContent.addComponent(tracker, 0, 2);
-        tracker.trackPageview("/demo");
         
         window.getContent().setSizeFull();
     }
@@ -126,8 +118,10 @@ public class VProtovisApplication extends Application implements ActionListener 
         this.sampleContainer.removeAllComponents();
         if (this.sampleMap.containsKey(FQN)) {
             this.sampleContainer.addComponent(this.sampleMap.get(FQN).getComponent());
+            tracker.trackPageview("/" + FQN.toLowerCase());
         } else {
             this.sampleContainer.addComponent(this.welcomePage.getComponent());
+            tracker.trackPageview("/welcome");
         }
     }
 

@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.bibounde.vprotovis.LineChartComponent;
+import com.bibounde.vprotovis.chart.line.DefaultLineTooltipFormatter;
 import com.bibounde.vprotovis.chart.line.InterpolationMode;
+import com.bibounde.vprotovis.chart.line.LineTooltipFormatter;
 import com.bibounde.vprotovis.chart.line.Serie;
 import com.bibounde.vprotovis.common.AxisLabelFormatter;
+import com.bibounde.vprotovis.common.Point;
 import com.bibounde.vprotovisdemo.Page;
 import com.bibounde.vprotovisdemo.dialog.CodeDialog;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
@@ -248,6 +251,37 @@ public class LineChartPage implements Page {
         if (this.miscPanel.getInterpolationMode() != InterpolationMode.LINEAR) {
             this.sourceCodeMap.put("interpolation", this.miscPanel.getInterpolationMode().name());
         }
+        
+        chart.setTooltipEnabled(this.miscPanel.isTooltipEnabled());
+        if (this.miscPanel.isTooltipEnabled()) {
+            if (this.miscPanel.isTooltipCustomEnabled()) {
+                chart.setTooltipFormatter(new LineTooltipFormatter() {
+                    
+                    public String getTooltipHTML(String serieName, Point value) {
+                        StringBuilder tooltipHTML = new StringBuilder();
+                        tooltipHTML.append("<table border=0 cellpadding=2 ><tr><td valign=top>").append("<img src=\"");
+
+                        String img = "/VAADIN/themes/vprotovisdemo/thumb_up.png";
+                        if (value.getY() < 0) {
+                            img = "/VAADIN/themes/vprotovisdemo/thumb_down.png";
+                        }
+                        tooltipHTML.append(img);
+                        tooltipHTML.append("\"></td><td>");
+                        tooltipHTML.append("<b><i>").append(serieName).append("</i></b><br/>");
+                        tooltipHTML.append("\u0024").append(": ").append(value.getY()).append(" \u20AC").append("<br/>");
+                        tooltipHTML.append("t").append(": ").append(value.getX()).append(" ms");
+                        tooltipHTML.append("</td><tr></table>");
+
+                        return tooltipHTML.toString();
+                    }
+                });
+            } else {
+                chart.setTooltipFormatter(new DefaultLineTooltipFormatter());
+            }
+            this.sourceCodeMap.put("customTooltipEnabled", this.miscPanel.isTooltipCustomEnabled());
+        }
+        this.sourceCodeMap.put("tooltipEnabled", this.miscPanel.isLegendEnabled());
+        
         
         chart.requestRepaint();
     }

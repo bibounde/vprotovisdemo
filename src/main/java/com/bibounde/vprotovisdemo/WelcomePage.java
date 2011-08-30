@@ -4,6 +4,7 @@ import com.bibounde.vprotovisdemo.action.ActionEvent;
 import com.bibounde.vprotovisdemo.action.ActionListener;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
+import com.bibounde.vprotovisdemo.piechart.PieChartPage;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.terminal.ThemeResource;
@@ -12,7 +13,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout.MarginInfo;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -20,6 +20,7 @@ public class WelcomePage implements Page {
 
     public static final String ACTION_SELECT_BARCHART = BarChartPage.FQN;
     public static final String ACTION_SELECT_LINECHART = LineChartPage.FQN;
+    public static final String ACTION_SELECT_PIECHART = PieChartPage.FQN;
     
     private Panel content;
     private ActionListener actionListener;
@@ -36,7 +37,7 @@ public class WelcomePage implements Page {
 
         content.addComponent(new Label("<h2>Conventional<h2><hr/>", Label.CONTENT_XHTML));
 
-        GridLayout conventionalLayout = new GridLayout(2, 1);
+        GridLayout conventionalLayout = new GridLayout(3, 1);
         content.addComponent(conventionalLayout);
         conventionalLayout.setSpacing(true);
 
@@ -45,6 +46,9 @@ public class WelcomePage implements Page {
         
         Component lineChartComponent = this.createScreenShotComponent("LineChart", "75-linechart.png", ACTION_SELECT_LINECHART);
         conventionalLayout.addComponent(lineChartComponent, 1, 0);
+        
+        Component pieChartComponent = this.createScreenShotComponent("PieChart", "75-piechart.png", ACTION_SELECT_PIECHART);
+        conventionalLayout.addComponent(pieChartComponent, 2, 0);
 
     }
 

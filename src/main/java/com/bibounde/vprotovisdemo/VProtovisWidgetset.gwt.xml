@@ -10,4 +10,6 @@
     <inherits name="org.vaadin.codelabel.CodelabelWidgetset" />
 
     <inherits name="org.vaadin.googleanalytics.tracking.GoogleAnalyticsWidgetset" />
+
+    <inherits name="com.vaadin.addon.colorpicker.gwt.ColorPickerWidgetSet" />
 </module>

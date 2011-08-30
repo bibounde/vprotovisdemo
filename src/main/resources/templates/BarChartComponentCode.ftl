@@ -1,5 +1,6 @@
 import com.bibounde.vprotovis.BarChartComponent;
-import com.bibounde.vprotovis.chart.bar.TooltipFormatter;
+import com.bibounde.vprotovis.chart.bar.BarTooltipFormatter;
+import com.bibounde.vprotovis.chart.bar.DefaultBarTooltipFormatter;
 import com.bibounde.vprotovis.common.AxisLabelFormatter;
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
@@ -83,9 +84,10 @@ public class WidgetTestApplication extends Application {
         bar.setLegendAreaWidth(${legendAreaWidth?c}d);
 </#if>
 <#if tooltipEnabled>
-<#if tooltipCustomEnabled>
-        
-        TooltipFormatter toolTipFormatter = new TooltipFormatter() {
+
+        bar.setTooltipEnabled(true);
+<#if tooltipCustomEnabled>        
+        BarTooltipFormatter toolTipFormatter = new BarTooltipFormatter() {
 
             public String getTooltipHTML(String serieName, double value, String groupName) {
                 StringBuilder tooltipHTML = new StringBuilder();
@@ -110,7 +112,7 @@ public class WidgetTestApplication extends Application {
 </#if>
 <#else>
 
-        bar.setTooltipFormatter(null);
+        bar.setTooltipEnabled(false);
 </#if>
 
         window.addComponent(bar);
