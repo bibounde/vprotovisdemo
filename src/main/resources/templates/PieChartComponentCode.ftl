@@ -17,7 +17,7 @@ public class WidgetTestApplication extends Application {
         window = new Window("Widget Test");
         setMainWindow(window);
 
-        PieChartComponent line = new PieChartComponent();
+        PieChartComponent pie = new PieChartComponent();
         
 <#list series as serie>
         pie.addSerie("${serie.name}", ${serie.value?c}d, ${serie.highlight?string});
@@ -120,7 +120,7 @@ public class WidgetTestApplication extends Application {
         pie.setLabelVisible(false);
 </#if>
 
-        window.addComponent(line);
+        window.addComponent(pie);
     }
 
 }

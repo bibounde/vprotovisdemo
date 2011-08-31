@@ -278,9 +278,9 @@ public class LineChartPage implements Page {
             } else {
                 chart.setTooltipFormatter(new DefaultLineTooltipFormatter());
             }
-            this.sourceCodeMap.put("customTooltipEnabled", this.miscPanel.isTooltipCustomEnabled());
+            this.sourceCodeMap.put("tooltipCustomEnabled", this.miscPanel.isTooltipCustomEnabled());
         }
-        this.sourceCodeMap.put("tooltipEnabled", this.miscPanel.isLegendEnabled());
+        this.sourceCodeMap.put("tooltipEnabled", this.miscPanel.isTooltipEnabled());
         
         
         chart.requestRepaint();

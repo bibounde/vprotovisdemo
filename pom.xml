@@ -6,7 +6,7 @@
 	<groupId>com.bibounde.vprotovisdemo</groupId>
 	<artifactId>vprotovisdemo</artifactId>
 	<packaging>war</packaging>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.4-SNAPSHOT</version>
 	<name>Vaadin wrapper for Vaadin Demo</name>
 	<scm>
 		<connection>scm:git:ssh://github.com/bibounde/bibounde-mvn-repo.git</connection>
