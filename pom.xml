@@ -41,9 +41,6 @@
 		<repository>
 			<id>bibounde-snapshots</id>
 			<url>https://raw.github.com/bibounde/bibounde-mvn-repo/master/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -51,6 +48,9 @@
 		<repository>
 			<id>bibounde-releases</id>
 			<url>https://raw.github.com/bibounde/bibounde-mvn-repo/master/releases</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
