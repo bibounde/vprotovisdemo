@@ -10,6 +10,7 @@ import com.bibounde.vprotovisdemo.action.ActionListener;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
 import com.bibounde.vprotovisdemo.piechart.PieChartPage;
+import com.bibounde.vprotovisdemo.spiderchart.SpiderChartPage;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -52,6 +53,7 @@ public class VProtovisApplication extends Application implements ActionListener 
         sampleMap.put(BarChartPage.FQN, new BarChartPage());
         sampleMap.put(LineChartPage.FQN, new LineChartPage());
         sampleMap.put(PieChartPage.FQN, new PieChartPage());
+        sampleMap.put(SpiderChartPage.FQN, new SpiderChartPage());
 
         GridLayout mainContent = new GridLayout(1, 3);
         mainContent.setRowExpandRatio(0, 1);
@@ -84,6 +86,10 @@ public class VProtovisApplication extends Application implements ActionListener 
         navTree.addItem(PieChartPage.FQN);
         navTree.setParent(PieChartPage.FQN, TREE_ROOT_NODE);
         navTree.setChildrenAllowed(PieChartPage.FQN, false);
+        
+        navTree.addItem(SpiderChartPage.FQN);
+        navTree.setParent(SpiderChartPage.FQN, TREE_ROOT_NODE);
+        navTree.setChildrenAllowed(SpiderChartPage.FQN, false);
         
         navTree.expandItem(TREE_ROOT_NODE);
         navTree.addListener(new ValueChangeListener() {
