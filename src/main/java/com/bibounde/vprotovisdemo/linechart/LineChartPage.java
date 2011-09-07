@@ -17,11 +17,11 @@ import com.bibounde.vprotovisdemo.Page;
 import com.bibounde.vprotovisdemo.dialog.CodeDialog;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.Notification;
 
 import freemarker.template.Configuration;
@@ -242,6 +242,14 @@ public class LineChartPage implements Page {
             chart.setLegendVisible(true);
             chart.setLegendAreaWidth(this.miscPanel.getLegendAreaWidth());
             this.sourceCodeMap.put("legendAreaWidth", this.miscPanel.getLegendAreaWidth());
+            
+            Double legendInsetLeft = this.miscPanel.getLegendInsetLeft();
+            if (legendInsetLeft != null) {
+                chart.setLegendInsetLeft(legendInsetLeft);
+                this.sourceCodeMap.put("legendInsetLeft", legendInsetLeft);
+            } else {
+                chart.setLegendInsetLeft(20d);
+            }
         } else {
             chart.setLegendVisible(false);
         }

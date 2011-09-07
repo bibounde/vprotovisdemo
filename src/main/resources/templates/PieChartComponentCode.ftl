@@ -62,6 +62,9 @@ public class WidgetTestApplication extends Application {
 
         pie.setLegendVisible(true);
         pie.setLegendAreaWidth(${legendAreaWidth?c}d);
+<#if legendInsetLeft?has_content>
+        bar.setLegendInsetLeft(${legendInsetLeft?c}d);
+</#if>
 </#if>
 <#if tooltipEnabled>
 

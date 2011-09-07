@@ -23,8 +23,8 @@ public class MiscPanel implements Page {
     
     private GridLayout content;
     private NativeSelect legendBox, tooltipBox, permanentBox, colorBox;
-    private Label legendAreaWidthLabel;
-    private TextField legendAreaWidthText;
+    private Label legendAreaWidthLabel, legendInsetLeftLabel;
+    private TextField legendAreaWidthText, legendInsetLeftText;
     private Label permanentLabel;
     
     public MiscPanel() {
@@ -52,7 +52,6 @@ public class MiscPanel implements Page {
         this.content.addComponent(this.legendBox, 1, 0);
         this.content.setComponentAlignment(this.legendBox, Alignment.MIDDLE_LEFT);
         
-
         this.legendAreaWidthLabel = new Label("Legend area width : ");
         this.content.addComponent(legendAreaWidthLabel, 2, 0);
         this.content.setComponentAlignment(legendAreaWidthLabel, Alignment.MIDDLE_LEFT);
@@ -62,6 +61,16 @@ public class MiscPanel implements Page {
         this.legendAreaWidthText.setImmediate(true);
         this.content.addComponent(this.legendAreaWidthText, 3, 0);
         this.content.setComponentAlignment(this.legendAreaWidthText, Alignment.MIDDLE_LEFT);
+        
+        this.legendInsetLeftLabel = new Label("Legend inset left : ");
+        this.content.addComponent(legendInsetLeftLabel, 4, 0);
+        this.content.setComponentAlignment(legendInsetLeftLabel, Alignment.MIDDLE_LEFT);
+
+        this.legendInsetLeftText = new TextField();
+        this.legendInsetLeftText.setWidth("110px");
+        this.legendInsetLeftText.setImmediate(true);
+        this.content.addComponent(this.legendInsetLeftText, 5, 0);
+        this.content.setComponentAlignment(this.legendInsetLeftText, Alignment.MIDDLE_LEFT);
         
         Label tooltipLabel = new Label("Tooltip : ");
         this.content.addComponent(tooltipLabel, 0, 1);
@@ -111,6 +120,8 @@ public class MiscPanel implements Page {
                 boolean enabled = ENABLED_OPTION.equals(event.getProperty().getValue());
                 legendAreaWidthText.setEnabled(enabled);
                 legendAreaWidthLabel.setEnabled(enabled);
+                legendInsetLeftLabel.setEnabled(enabled);
+                legendInsetLeftText.setEnabled(true);
             }
         });
         
@@ -125,9 +136,12 @@ public class MiscPanel implements Page {
     }
     
     private void initValidator() {
+        DoubleValidator doubleValidator = new DoubleValidator("Value must be a number");
+        
         this.legendAreaWidthText.setRequiredError("Legend area must be set");
         this.legendAreaWidthText.setRequired(true);
-        this.legendAreaWidthText.addValidator(new DoubleValidator("Value must be a number"));
+        this.legendAreaWidthText.addValidator(doubleValidator);
+        this.legendInsetLeftText.addValidator(doubleValidator);
     }
 
     public Component getComponent() {
@@ -146,6 +160,7 @@ public class MiscPanel implements Page {
         try {
             if (ENABLED_OPTION.equals(this.legendBox.getValue())) {
                 this.legendAreaWidthText.validate();
+                this.legendInsetLeftText.validate();
             }
             return true;
         } catch (Exception e) {
@@ -176,5 +191,9 @@ public class MiscPanel implements Page {
     
     public boolean isPermanentTooltip() {
         return isTooltipEnabled() && YES_OPTION.equals(this.permanentBox.getValue());
+    }
+    
+    public Double getLegendInsetLeft() {
+        return this.legendInsetLeftText.getValue().equals("") ? null : Double.valueOf((String) this.legendInsetLeftText.getValue());
     }
 }

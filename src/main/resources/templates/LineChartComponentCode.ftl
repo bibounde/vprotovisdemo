@@ -95,6 +95,9 @@ public class WidgetTestApplication extends Application {
 
         line.setLegendVisible(true);
         line.setLegendAreaWidth(${legendAreaWidth?c}d);
+<#if legendInsetLeft?has_content>
+        line.setLegendInsetLeft(${legendInsetLeft?c}d);
+</#if>
 </#if>
 <#if tooltipEnabled>
 

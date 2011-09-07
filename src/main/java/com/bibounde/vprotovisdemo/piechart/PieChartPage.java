@@ -210,6 +210,14 @@ public class PieChartPage implements Page {
             chart.setLegendVisible(true);
             chart.setLegendAreaWidth(this.miscPanel.getLegendAreaWidth());
             this.sourceCodeMap.put("legendAreaWidth", this.miscPanel.getLegendAreaWidth());
+            
+            Double legendInsetLeft = this.miscPanel.getLegendInsetLeft();
+            if (legendInsetLeft != null) {
+                chart.setLegendInsetLeft(legendInsetLeft);
+                this.sourceCodeMap.put("legendInsetLeft", legendInsetLeft);
+            } else {
+                chart.setLegendInsetLeft(20d);
+            }
         } else {
             chart.setLegendVisible(false);
         }
