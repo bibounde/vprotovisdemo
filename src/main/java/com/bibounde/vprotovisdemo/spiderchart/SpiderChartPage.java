@@ -1,15 +1,18 @@
 package com.bibounde.vprotovisdemo.spiderchart;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.bibounde.vprotovis.SpiderChartComponent;
-import com.bibounde.vprotovis.chart.bar.DefaultBarTooltipFormatter;
 import com.bibounde.vprotovis.chart.spider.DefaultSpiderTooltipFormatter;
 import com.bibounde.vprotovis.chart.spider.Serie;
 import com.bibounde.vprotovis.chart.spider.SpiderTooltipFormatter;
+import com.bibounde.vprotovis.common.AxisLabelFormatter;
 import com.bibounde.vprotovisdemo.Page;
+import com.bibounde.vprotovisdemo.dialog.CodeDialog;
 import com.bibounde.vprotovisdemo.util.RandomUtil;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button.ClickEvent;
@@ -18,6 +21,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window.Notification;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 public class SpiderChartPage implements Page {
 
@@ -31,6 +38,7 @@ public class SpiderChartPage implements Page {
     private VerticalSplitPanel content;
     private DataPanel dataPanel;
     private DimensionPanel dimensionPanel;
+    private AxisPanel axisPanel;
     private MiscPanel miscPanel;
     private ChartPanel chartPanel;
 
@@ -58,6 +66,9 @@ public class SpiderChartPage implements Page {
         this.dataPanel = new DataPanel();
         tabSheet.addTab(this.dataPanel.getComponent(), TAB_DATA, new ThemeResource("table.png"));
         
+        this.axisPanel = new AxisPanel();
+        tabSheet.addTab(this.axisPanel.getComponent(), TAB_AXIS, new ThemeResource("shape_align_middle.png"));
+        
         this.miscPanel = new MiscPanel();
         tabSheet.addTab(this.miscPanel.getComponent(), TAB_MISC, new ThemeResource("palette.png"));
         
@@ -72,6 +83,28 @@ public class SpiderChartPage implements Page {
                 renderChart(false);
             }
         });
+        
+        this.chartPanel.getSourceButton().addListener(new ClickListener() {
+            
+            public void buttonClick(ClickEvent event) {
+                try {
+                    Configuration configuration = new Configuration();
+                    configuration.setClassForTemplateLoading(getClass(), "/templates/");
+                    Template tpl = configuration.getTemplate("SpiderChartComponentCode.ftl");
+                    StringWriter sWriter = new StringWriter();
+                    
+                    tpl.process(sourceCodeMap, sWriter);
+                    CodeDialog codeDialog = new CodeDialog(sWriter.toString());
+                    content.getWindow().addWindow(codeDialog);
+                    codeDialog.center();
+                    
+                } catch (IOException e) {
+                    content.getWindow().showNotification("Configuration error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                } catch (TemplateException e) {
+                    content.getWindow().showNotification("Template error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+        });
     }
     
     private void renderChart(boolean firstRendering) {
@@ -80,11 +113,11 @@ public class SpiderChartPage implements Page {
                 this.content.getWindow().showNotification("Unable to render chart", "Dimension values are invalid.", Notification.TYPE_ERROR_MESSAGE);
                 this.tabSheet.setSelectedTab(this.dimensionPanel.getComponent());
                 return;
-            } /*else if (!this.axisPanel.validate()) {
+            } else if (!this.axisPanel.validate()) {
                 this.content.getWindow().showNotification("Unable to render chart", "Axis values are invalid.", Notification.TYPE_ERROR_MESSAGE);
                 this.tabSheet.setSelectedTab(this.axisPanel.getComponent());
                 return;
-            }*/ else if (!this.miscPanel.validate()) {
+            } else if (!this.miscPanel.validate()) {
                 this.content.getWindow().showNotification("Unable to render chart", "Misc values are invalid.", Notification.TYPE_ERROR_MESSAGE);
                 this.tabSheet.setSelectedTab(this.miscPanel.getComponent());
                 return;
@@ -97,6 +130,7 @@ public class SpiderChartPage implements Page {
         this.sourceCodeMap.clear();
         
         chart.setAxisNames(this.dataPanel.getAxis());
+        this.sourceCodeMap.put("axisNames", this.dataPanel.getAxis());
         
         chart.clearSeries();
         for (Serie serie : series) {
@@ -150,6 +184,32 @@ public class SpiderChartPage implements Page {
             chart.setLineWidth(1);
         }
         
+        chart.setAxisVisible(this.axisPanel.isAxisEnabled());
+        this.sourceCodeMap.put("axisVisible", this.axisPanel.isAxisEnabled());
+        
+        chart.setAxisLabelVisible(this.axisPanel.isAxisLabelEnabled());
+        this.sourceCodeMap.put("axisLabelVisible", this.axisPanel.isAxisLabelEnabled());
+        
+        chart.setAxisLabelStep(this.axisPanel.getAxisLabelStep());
+        this.sourceCodeMap.put("axisLabelStep", this.axisPanel.getAxisLabelStep());
+        
+        chart.setAxisCaptionVisible(this.axisPanel.isAxisCaptionEnabled());
+        this.sourceCodeMap.put("axisCaptionVisible", this.axisPanel.isAxisCaptionEnabled());
+        
+        chart.setAxisGridVisible(this.axisPanel.isAxisGridEnabled());
+        this.sourceCodeMap.put("axisGridVisible", this.axisPanel.isAxisGridEnabled());
+        
+        if (this.axisPanel.isAxisCustomFormatter()) {
+            chart.setAxisLabelFormatter(new AxisLabelFormatter() {
+                public String format(double labelValue) {
+                    return String.valueOf(labelValue) + "\u20AC";
+                }
+            });
+        } else {
+            chart.setAxisLabelFormatter(null);
+        }
+        this.sourceCodeMap.put("axisCustomFormatter", this.axisPanel.isAxisCustomFormatter());
+        
         if (this.miscPanel.isRandomColorSelected()) {
             String[] colors = RandomUtil.nextColors();
             chart.setColors(colors);
@@ -176,6 +236,7 @@ public class SpiderChartPage implements Page {
         }
         this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
+        chart.setTooltipEnabled(this.miscPanel.isTooltipEnabled());
         if (this.miscPanel.isTooltipEnabled()) {
             if (this.miscPanel.isTooltipCustomEnabled()) {
                 chart.setTooltipFormatter(new SpiderTooltipFormatter() {

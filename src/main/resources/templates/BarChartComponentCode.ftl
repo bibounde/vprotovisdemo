@@ -50,7 +50,7 @@ public class WidgetTestApplication extends Application {
 </#if>
 <#if xAxisVisible >
 
-        bar.setXAxisVisisble(true);
+        bar.setXAxisVisible(true);
 </#if>
 <#if xAxisLabelVisible>
         bar.setXAxisLabelVisible(true);

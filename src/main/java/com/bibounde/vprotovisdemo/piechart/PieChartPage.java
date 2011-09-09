@@ -223,6 +223,7 @@ public class PieChartPage implements Page {
         }
         this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
+        chart.setTooltipEnabled(this.miscPanel.isTooltipEnabled());
         if (this.miscPanel.isTooltipEnabled()) {
             boolean permanent = this.miscPanel.isPermanentTooltip();
             this.sourceCodeMap.put("permanentTooltip", permanent);

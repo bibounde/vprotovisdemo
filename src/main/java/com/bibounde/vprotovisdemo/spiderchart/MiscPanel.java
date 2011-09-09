@@ -163,8 +163,9 @@ public class MiscPanel implements Page {
         this.legendAreaWidthText.setValue("150");
         this.legendInsetLeftText.setValue("50");
         this.colorBox.setValue(DEFAULT_OPTION);
-        this.tooltipBox.setValue(DISABLED_OPTION);
+        this.tooltipBox.setValue(ENABLED_OPTION);
         this.areaBox.setValue(ENABLED_OPTION);
+        this.tooltipBox.setValue(ENABLED_OPTION);
     }
 
     public boolean validate() {

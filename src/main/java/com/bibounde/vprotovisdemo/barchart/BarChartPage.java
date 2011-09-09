@@ -192,7 +192,7 @@ public class BarChartPage implements Page {
             chart.setBarInset(2d);
         }
 
-        chart.setXAxisVisisble(this.axisPanel.isXAxisEnabled());
+        chart.setXAxisVisible(this.axisPanel.isXAxisEnabled());
         this.sourceCodeMap.put("xAxisVisible", this.axisPanel.isXAxisEnabled());
         
         chart.setXAxisLabelVisible(this.axisPanel.isXAxisLabelEnabled());
@@ -247,6 +247,7 @@ public class BarChartPage implements Page {
         }
         this.sourceCodeMap.put("legendVisible", this.miscPanel.isLegendEnabled());
         
+        chart.setTooltipEnabled(this.miscPanel.isTooltipEnabled());
         if (this.miscPanel.isTooltipEnabled()) {
             if (this.miscPanel.isTooltipCustomEnabled()) {
                 chart.setTooltipFormatter(new BarTooltipFormatter() {
