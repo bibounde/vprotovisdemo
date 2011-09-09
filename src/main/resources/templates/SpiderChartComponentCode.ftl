@@ -96,6 +96,8 @@ public class WidgetTestApplication extends Application {
 
         spider.setTooltipEnabled(false);
 <#else>
+        
+        spider.setTooltipEnabled(true);
 <#if tooltipCustomEnabled>        
         SpiderTooltipFormatter toolTipFormatter = new SpiderTooltipFormatter() {
 
@@ -119,9 +121,6 @@ public class WidgetTestApplication extends Application {
 
         spider.setTooltipFormatter(toolTipFormatter);
 </#if>
-<#else>
-
-        spider.setTooltipEnabled(false);
 </#if>
 
         window.addComponent(spider);
