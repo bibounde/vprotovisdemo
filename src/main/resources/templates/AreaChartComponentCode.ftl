@@ -24,7 +24,7 @@ public class WidgetTestApplication extends Application {
         AreaChartComponent area = new AreaChartComponent();
 <#list series as serie>
         area.addSerie("${serie.name}", new Point[] {<#list serie.values as value><#if value_index % 2 = 0 && value_index != 0>
-                                             </#if>new Point(${value.x?c}d, ${value.y?c}d)<#if value_has_next>, </#if></#list>});
+                                              </#if>new Point(${value.x?c}d, ${value.y?c}d)<#if value_has_next>, </#if></#list>});
 </#list>
         area.setChartWidth(${chartWidth?c}d);
         area.setChartHeight(${chartHeight?c}d); 
@@ -50,7 +50,7 @@ public class WidgetTestApplication extends Application {
 </#if>
 <#if opacity?has_content>
 
-        area.setAreaOpacity(${opacity});
+        area.setAreaOpacity(${opacity?c}d);
 </#if>
 <#if interpolation?has_content>
         area.setInterpolationMode(InterpolationMode.${interpolation});
@@ -135,7 +135,6 @@ public class WidgetTestApplication extends Application {
 
         area.setTooltipEnabled(false);
 </#if>
-
 
         window.addComponent(area);
     }

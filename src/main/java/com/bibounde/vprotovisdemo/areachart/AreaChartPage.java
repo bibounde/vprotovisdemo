@@ -1,4 +1,4 @@
-package com.bibounde.vprotovisdemo.linechart;
+package com.bibounde.vprotovisdemo.areachart;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bibounde.vprotovis.LineChartComponent;
-import com.bibounde.vprotovis.chart.line.DefaultLineTooltipFormatter;
+import com.bibounde.vprotovis.AreaChartComponent;
 import com.bibounde.vprotovis.chart.InterpolationMode;
-import com.bibounde.vprotovis.chart.line.LineTooltipFormatter;
-import com.bibounde.vprotovis.chart.line.Serie;
+import com.bibounde.vprotovis.chart.area.AreaTooltipFormatter;
+import com.bibounde.vprotovis.chart.area.DefaultAreaTooltipFormatter;
+import com.bibounde.vprotovis.chart.area.Serie;
 import com.bibounde.vprotovis.common.AxisLabelFormatter;
 import com.bibounde.vprotovis.common.Point;
 import com.bibounde.vprotovisdemo.Page;
@@ -28,9 +28,9 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public class LineChartPage implements Page {
+public class AreaChartPage implements Page {
 
-    public static final String FQN = "LineChart";
+    public static final String FQN = "AreaChart";
     
     private static final String TAB_DIMENSIONS = "Dimensions";
     private static final String TAB_AXIS = "Grid";
@@ -47,7 +47,7 @@ public class LineChartPage implements Page {
     private TabSheet tabSheet;
     private Map<String, Object> sourceCodeMap = new HashMap<String, Object>();
     
-    public LineChartPage() {
+    public AreaChartPage() {
         this.initLayout();
         this.initListener();
         this.renderChart(false);
@@ -91,7 +91,7 @@ public class LineChartPage implements Page {
                 try {
                     Configuration configuration = new Configuration();
                     configuration.setClassForTemplateLoading(getClass(), "/templates/");
-                    Template tpl = configuration.getTemplate("LineChartComponentCode.ftl");
+                    Template tpl = configuration.getTemplate("AreaChartComponentCode.ftl");
                     StringWriter sWriter = new StringWriter();
                     
                     tpl.process(sourceCodeMap, sWriter);
@@ -128,7 +128,7 @@ public class LineChartPage implements Page {
         
         List<Serie> series = this.dataPanel.getSeries();
         
-        LineChartComponent chart = this.chartPanel.getChart();
+        AreaChartComponent chart = this.chartPanel.getChart();
         this.sourceCodeMap.clear();
         
         chart.clearSeries();
@@ -181,6 +181,14 @@ public class LineChartPage implements Page {
             this.sourceCodeMap.put("lineWidth", lineWidth);
         } else {
             chart.setLineWidth(1);
+        }
+        
+        Double opacity = this.miscPanel.getAreaOpacity();
+        if (opacity != null) {
+            chart.setAreaOpacity(opacity);
+            this.sourceCodeMap.put("opacity", opacity);
+        } else {
+            chart.setAreaOpacity(0.3d);
         }
         
         chart.setXAxisVisible(this.axisPanel.isXAxisEnabled());
@@ -263,7 +271,7 @@ public class LineChartPage implements Page {
         chart.setTooltipEnabled(this.miscPanel.isTooltipEnabled());
         if (this.miscPanel.isTooltipEnabled()) {
             if (this.miscPanel.isTooltipCustomEnabled()) {
-                chart.setTooltipFormatter(new LineTooltipFormatter() {
+                chart.setTooltipFormatter(new AreaTooltipFormatter() {
                     
                     public String getTooltipHTML(String serieName, Point value) {
                         StringBuilder tooltipHTML = new StringBuilder();
@@ -284,7 +292,7 @@ public class LineChartPage implements Page {
                     }
                 });
             } else {
-                chart.setTooltipFormatter(new DefaultLineTooltipFormatter());
+                chart.setTooltipFormatter(new DefaultAreaTooltipFormatter());
             }
             this.sourceCodeMap.put("tooltipCustomEnabled", this.miscPanel.isTooltipCustomEnabled());
         }

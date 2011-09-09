@@ -2,6 +2,7 @@ package com.bibounde.vprotovisdemo;
 
 import com.bibounde.vprotovisdemo.action.ActionEvent;
 import com.bibounde.vprotovisdemo.action.ActionListener;
+import com.bibounde.vprotovisdemo.areachart.AreaChartPage;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
 import com.bibounde.vprotovisdemo.piechart.PieChartPage;
@@ -22,6 +23,7 @@ public class WelcomePage implements Page {
     public static final String ACTION_SELECT_BARCHART = BarChartPage.FQN;
     public static final String ACTION_SELECT_LINECHART = LineChartPage.FQN;
     public static final String ACTION_SELECT_PIECHART = PieChartPage.FQN;
+    public static final String ACTION_SELECT_AREACHART = AreaChartPage.FQN;
     public static final String ACTION_SELECT_SPIDERCHART = SpiderChartPage.FQN;
     
     private Panel content;
@@ -39,7 +41,7 @@ public class WelcomePage implements Page {
 
         content.addComponent(new Label("<h2>Conventional<h2><hr/>", Label.CONTENT_XHTML));
 
-        GridLayout conventionalLayout = new GridLayout(3, 1);
+        GridLayout conventionalLayout = new GridLayout(4, 1);
         content.addComponent(conventionalLayout);
         conventionalLayout.setSpacing(true);
 
@@ -51,6 +53,9 @@ public class WelcomePage implements Page {
         
         Component pieChartComponent = this.createScreenShotComponent("PieChart", "75-piechart.png", ACTION_SELECT_PIECHART);
         conventionalLayout.addComponent(pieChartComponent, 2, 0);
+        
+        Component areaChartComponent = this.createScreenShotComponent("AreaChart", "75-areachart.png", ACTION_SELECT_AREACHART);
+        conventionalLayout.addComponent(areaChartComponent, 3, 0);
         
         content.addComponent(new Label("<h2>Custom<h2><hr/>", Label.CONTENT_XHTML));
         

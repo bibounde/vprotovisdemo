@@ -17,3 +17,9 @@
     padding-top: 12px;
     padding-left: 13px;
 }
+
+.versions {
+    color : #727171;
+    text-align : center;
+    font-size : 0.9em;
+}

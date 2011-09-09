@@ -1,7 +1,8 @@
-package com.bibounde.vprotovisdemo.linechart;
+package com.bibounde.vprotovisdemo.areachart;
 
 import com.bibounde.vprotovis.chart.InterpolationMode;
 import com.bibounde.vprotovisdemo.Page;
+import com.bibounde.vprotovisdemo.util.OpacityValidator;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.validator.DoubleValidator;
@@ -29,7 +30,7 @@ public class MiscPanel implements Page {
     private GridLayout content;
     private NativeSelect legendBox, interpolationBox, tooltipBox, colorBox;
     private Label legendAreaWidthLabel, legendInsetLeftLabel;
-    private TextField legendAreaWidthText, legendInsetLeftText;
+    private TextField legendAreaWidthText, legendInsetLeftText, areaOpacityText;
     
     public MiscPanel() {
         this.initLayout();
@@ -39,7 +40,7 @@ public class MiscPanel implements Page {
     }
 
     private void initLayout() {
-        this.content = new GridLayout(8, 4);
+        this.content = new GridLayout(8, 5);
         this.content.setMargin(true);
         this.content.setSpacing(true);
         
@@ -119,6 +120,16 @@ public class MiscPanel implements Page {
         this.tooltipBox.setImmediate(true);
         this.content.addComponent(this.tooltipBox, 1, 3);
         this.content.setComponentAlignment(this.tooltipBox, Alignment.MIDDLE_LEFT);
+        
+        Label areaOpacityLabel= new Label("Opacity : ");
+        this.content.addComponent(areaOpacityLabel, 0, 4);
+        this.content.setComponentAlignment(areaOpacityLabel, Alignment.MIDDLE_LEFT);
+
+        this.areaOpacityText = new TextField();
+        this.areaOpacityText.setWidth("110px");
+        this.areaOpacityText.setImmediate(true);
+        this.content.addComponent(this.areaOpacityText, 1, 4);
+        this.content.setComponentAlignment(this.areaOpacityText, Alignment.MIDDLE_LEFT);
     }
     
     private void initListener() {
@@ -141,6 +152,8 @@ public class MiscPanel implements Page {
         this.legendAreaWidthText.setRequired(true);
         this.legendAreaWidthText.addValidator(doubleValidator);
         this.legendInsetLeftText.addValidator(doubleValidator);
+        
+        this.areaOpacityText.addValidator(new OpacityValidator());
     }
 
     public Component getComponent() {
@@ -194,5 +207,9 @@ public class MiscPanel implements Page {
     
     public Double getLegendInsetLeft() {
         return this.legendInsetLeftText.getValue().equals("") ? null : Double.valueOf((String) this.legendInsetLeftText.getValue());
+    }
+    
+    public Double getAreaOpacity() {
+        return this.areaOpacityText.getValue().equals("") ? null : Double.valueOf((String) this.areaOpacityText.getValue());
     }
 }

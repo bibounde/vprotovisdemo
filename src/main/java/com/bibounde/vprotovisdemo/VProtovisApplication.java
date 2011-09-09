@@ -1,12 +1,15 @@
 package com.bibounde.vprotovisdemo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
 
 import com.bibounde.vprotovisdemo.action.ActionEvent;
 import com.bibounde.vprotovisdemo.action.ActionListener;
+import com.bibounde.vprotovisdemo.areachart.AreaChartPage;
 import com.bibounde.vprotovisdemo.barchart.BarChartPage;
 import com.bibounde.vprotovisdemo.linechart.LineChartPage;
 import com.bibounde.vprotovisdemo.piechart.PieChartPage;
@@ -19,6 +22,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -45,6 +49,13 @@ public class VProtovisApplication extends Application implements ActionListener 
     @Override
     public void init() {
         
+        Properties properties = new Properties();
+        try {
+            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("demo.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         setTheme("vprotovisdemo");
         
         window = new Window("Protovis Wrapper Demo");
@@ -53,9 +64,10 @@ public class VProtovisApplication extends Application implements ActionListener 
         sampleMap.put(BarChartPage.FQN, new BarChartPage());
         sampleMap.put(LineChartPage.FQN, new LineChartPage());
         sampleMap.put(PieChartPage.FQN, new PieChartPage());
+        sampleMap.put(AreaChartPage.FQN, new AreaChartPage());
         sampleMap.put(SpiderChartPage.FQN, new SpiderChartPage());
 
-        GridLayout mainContent = new GridLayout(1, 3);
+        GridLayout mainContent = new GridLayout(1, 4);
         mainContent.setRowExpandRatio(0, 1);
         window.addComponent(mainContent);
         mainContent.setSizeFull();
@@ -87,6 +99,10 @@ public class VProtovisApplication extends Application implements ActionListener 
         navTree.setParent(PieChartPage.FQN, TREE_ROOT_NODE);
         navTree.setChildrenAllowed(PieChartPage.FQN, false);
         
+        navTree.addItem(AreaChartPage.FQN);
+        navTree.setParent(AreaChartPage.FQN, TREE_ROOT_NODE);
+        navTree.setChildrenAllowed(AreaChartPage.FQN, false);
+        
         navTree.addItem(SpiderChartPage.FQN);
         navTree.setParent(SpiderChartPage.FQN, TREE_ROOT_NODE);
         navTree.setChildrenAllowed(SpiderChartPage.FQN, false);
@@ -106,16 +122,25 @@ public class VProtovisApplication extends Application implements ActionListener 
         this.welcomePage = new WelcomePage(this);
         this.sampleContainer.addComponent(this.welcomePage.getComponent());
         
+        //Versions
+        StringBuilder versions = new StringBuilder();
+        versions.append("Site version ").append(properties.get("demo.version"));
+        versions.append("- API version ").append(properties.get("vprotovis.version"));
+        Label versionLabel = new Label(versions.toString(), Label.CONTENT_XHTML);
+        versionLabel.setStyleName("versions");
+        mainContent.addComponent(versionLabel, 0, 1);
+        mainContent.setComponentAlignment(versionLabel, Alignment.MIDDLE_CENTER);
+        
         //Pub
         Embedded pub = new Embedded(null, new ExternalResource("http://code.google.com/appengine/images/appengine-silver-120x30.gif"));
         pub.setStyleName("pub");
-        mainContent.addComponent(pub, 0, 1);
+        mainContent.addComponent(pub, 0, 2);
         mainContent.setComponentAlignment(pub, Alignment.MIDDLE_CENTER);
         
         
         //Analytics
         this.tracker = new GoogleAnalyticsTracker("UA-25299561-1", "vprotovisdemo.appspot.com");
-        mainContent.addComponent(tracker, 0, 2);
+        mainContent.addComponent(tracker, 0, 3);
         
         window.getContent().setSizeFull();
     }
