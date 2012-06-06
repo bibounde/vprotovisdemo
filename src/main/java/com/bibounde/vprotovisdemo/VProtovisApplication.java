@@ -125,7 +125,7 @@ public class VProtovisApplication extends Application implements ActionListener 
         //Versions
         StringBuilder versions = new StringBuilder();
         versions.append("Site version ").append(properties.get("demo.version"));
-        versions.append("- API version ").append(properties.get("vprotovis.version"));
+        versions.append(" - API version ").append(properties.get("vprotovis.version"));
         Label versionLabel = new Label(versions.toString(), Label.CONTENT_XHTML);
         versionLabel.setStyleName("versions");
         mainContent.addComponent(versionLabel, 0, 1);
